@@ -1,4 +1,6 @@
 # 🐻 bear 🐻
+[![Build Status](https://travis-ci.org/hexjelly/bear.svg?branch=master)](https://travis-ci.org/hexjelly/bear) [![Coverage Status](https://coveralls.io/repos/github/hexjelly/bear/badge.svg?branch=master)](https://coveralls.io/github/hexjelly/bear?branch=master)
+
 When you need more bears
 
 ## Help
