@@ -32,8 +32,7 @@ fn main() {
 }
 
 fn bear<W: Write>(buf: &mut W, opt: &Opt) {
-    let bears = opt.bears;
-    if bears < 1 {
+    if opt.bears < 1 {
         buf.write(b"\xF0\x9F\x90\xB1").unwrap();
         buf.flush().unwrap();
         return;
@@ -48,7 +47,7 @@ fn bear<W: Write>(buf: &mut W, opt: &Opt) {
     };
 
     let mut n = 1;
-    while bears >= n {
+    while opt.bears >= n {
         if opt.delay > 0 {
             thread::sleep(ms);
         }
@@ -69,10 +68,60 @@ mod tests {
     use super::*;
 
     #[test]
-    fn zero_bears() {
+    fn bears_0() {
         let mut buf = vec![];
-        let opt = Opt::default();
-        bear(&mut buf, &opt);
+        bear(&mut buf, &Opt::default());
+
         assert_eq!(&[240, 159, 144, 177], &buf[..]);
+    }
+
+    #[test]
+    fn bears_1() {
+        let mut buf = vec![];
+        let opt = Opt {
+            bears: 1,
+            ..Default::default()
+        };
+        bear(&mut buf, &opt);
+
+        assert_eq!(&[240, 159, 144, 187], &buf[..]);
+    }
+
+    #[test]
+    fn bears_100() {
+        let mut buf = vec![];
+        let opt = Opt {
+            bears: 100,
+            ..Default::default()
+        };
+        bear(&mut buf, &opt);
+
+        assert_eq!(400, buf.len());
+        assert_eq!(&[240, 159, 144, 187], &buf[..4]);
+        assert_eq!(&[144, 187, 240, 159], &buf[250..254]);
+        assert!(
+            buf.iter()
+                .all(|&b| b == 240 || b == 159 || b == 144 || b == 187)
+        );
+    }
+
+    #[test]
+    fn bears_100_split_20() {
+        let mut buf = vec![];
+        let opt = Opt {
+            bears: 100,
+            newline: 20,
+            ..Default::default()
+        };
+        bear(&mut buf, &opt);
+
+        assert_eq!(405, buf.len());
+        assert_eq!(&[240, 159, 144, 187], &buf[4..8]);
+        assert_eq!(&[240, 159, 144, 187, 10], &buf[76..81]);
+        assert_eq!(&[240, 159, 144, 187, 10], &buf[157..162]);
+        assert!(
+            buf.iter()
+                .all(|&b| b == 240 || b == 159 || b == 144 || b == 187 || b == 10)
+        );
     }
 }
