@@ -34,7 +34,6 @@ fn main() {
 fn bear<W: Write>(buf: &mut W, opt: &Opt) {
     if opt.bears < 1 {
         buf.write(b"\xF0\x9F\x90\xB1").unwrap();
-        buf.flush().unwrap();
         return;
     }
 
@@ -50,15 +49,16 @@ fn bear<W: Write>(buf: &mut W, opt: &Opt) {
     while opt.bears >= n {
         if opt.delay > 0 {
             thread::sleep(ms);
+            buf.flush().unwrap();
         }
         buf.write(b"\xF0\x9F\x90\xBB").unwrap();
         if newline > 0 && n % newline == 0 {
             buf.write(b"\n").unwrap();
+            buf.flush().unwrap();
             if opt.random {
                 newline = rng.gen_range(1, 100);
             }
         }
-        buf.flush().unwrap();
         n += 1;
     }
 }
