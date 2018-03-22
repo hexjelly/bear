@@ -88,6 +88,34 @@ mod tests {
     }
 
     #[test]
+    fn bears_delay() {
+        let mut buf = vec![];
+        let opt = Opt {
+            bears: 10,
+            delay: 500,
+            ..Default::default()
+        };
+
+        let now = time::Instant::now();
+        bear(&mut buf, &opt);
+
+        assert!(now.elapsed().as_secs() >= 5);
+    }
+
+    #[test]
+    fn bears_random() {
+        let mut buf = vec![];
+        let opt = Opt {
+            bears: 100,
+            random: true,
+            ..Default::default()
+        };
+        bear(&mut buf, &opt);
+
+        assert!(buf.iter().filter(|b| **b == 10).count() >= 1);
+    }
+
+    #[test]
     fn bears_100() {
         let mut buf = vec![];
         let opt = Opt {
