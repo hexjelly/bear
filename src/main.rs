@@ -33,7 +33,7 @@ fn main() {
 
 fn bear<W: Write>(buf: &mut W, opt: &Opt) {
     if opt.bears < 1 {
-        buf.write(b"\xF0\x9F\x90\xB1").unwrap();
+        buf.write(b"\xF0\x9F\x90\xB1\n").unwrap();
         return;
     }
 
@@ -61,6 +61,7 @@ fn bear<W: Write>(buf: &mut W, opt: &Opt) {
         }
         n += 1;
     }
+    buf.write(b"\n").unwrap();
 }
 
 #[cfg(test)]
@@ -72,7 +73,7 @@ mod tests {
         let mut buf = vec![];
         bear(&mut buf, &Opt::default());
 
-        assert_eq!(&[240, 159, 144, 177], &buf[..]);
+        assert_eq!(&[240, 159, 144, 177, 10], &buf[..]);
     }
 
     #[test]
@@ -84,7 +85,7 @@ mod tests {
         };
         bear(&mut buf, &opt);
 
-        assert_eq!(&[240, 159, 144, 187], &buf[..]);
+        assert_eq!(&[240, 159, 144, 187, 10], &buf[..]);
     }
 
     #[test]
@@ -124,12 +125,12 @@ mod tests {
         };
         bear(&mut buf, &opt);
 
-        assert_eq!(400, buf.len());
+        assert_eq!(401, buf.len());
         assert_eq!(&[240, 159, 144, 187], &buf[..4]);
         assert_eq!(&[144, 187, 240, 159], &buf[250..254]);
         assert!(
             buf.iter()
-                .all(|&b| b == 240 || b == 159 || b == 144 || b == 187)
+                .all(|&b| b == 240 || b == 159 || b == 144 || b == 187 || b == 10)
         );
     }
 
@@ -143,7 +144,7 @@ mod tests {
         };
         bear(&mut buf, &opt);
 
-        assert_eq!(405, buf.len());
+        assert_eq!(406, buf.len());
         assert_eq!(&[240, 159, 144, 187], &buf[4..8]);
         assert_eq!(&[240, 159, 144, 187, 10], &buf[76..81]);
         assert_eq!(&[240, 159, 144, 187, 10], &buf[157..162]);
